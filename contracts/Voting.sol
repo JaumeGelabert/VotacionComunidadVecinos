@@ -162,7 +162,14 @@ contract Voting {
         }
     }
 
+    bytes32[] ArrayVotantes;
+
     function ViveAqui(string memory _idVecino) public view returns (bool) {
+        /*
+            El primer hash de ArrayHashNombrePuerta corresponde a los valores [nombre --> Jaime, puerta --> A].
+            El segundo corresponde a [nombre --> Ana, puerta --> B].
+            Cualquier otra combinación debería devolver false. 
+        */
         string memory NombrePuertaViveAqui = string(
             abi.encodePacked(
                 MappingVecinos[_idVecino].nombre,
@@ -176,11 +183,9 @@ contract Voting {
         for (uint256 i = 0; i < ArrayHashNombrePuerta.length; i++) {
             if (ArrayHashNombrePuerta[i] == hashNombrePuertaViveAqui) {
                 return true;
-            } else {
-                return false;
             }
         }
 
-        return true;
+        return false;
     }
 }
