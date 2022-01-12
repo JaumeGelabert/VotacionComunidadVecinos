@@ -99,7 +99,7 @@ contract Voting {
     //Para saber la información de la persona y saber si puede votar o no, creamos un mapping
     mapping(string => Vecino) MappingVecinos;
 
-    function saveMappingVecino(
+    function saveVecino(
         string memory _idVecino,
         string memory _nombre,
         uint256 _edad,
@@ -134,7 +134,16 @@ contract Voting {
         return hashNombrePuerta;
     }
 
-    function posibleVotar(string memory _idVecino)
+    bytes32[] ArrayHashNombrePuerta = [
+        bytes32(
+            0x3231d4a001fd0f6d66c3bd8dba50568f195ecd907783730730b95ac48163fe4e
+        ),
+        bytes32(
+            0xf1132e860e0f1e29db0cfa827f2fae65d7483afcb0f95a8b6a7b6889f997bdf2
+        )
+    ];
+
+    function mayorEdad(string memory _idVecino)
         public
         view
         returns (bool, string memory)
@@ -149,7 +158,29 @@ contract Voting {
             */
             return (true, "Puede votar");
         } else {
-            return (false, "NO puede votar");
+            return (false, "Menor de edad, NO puede votar");
         }
+    }
+
+    function ViveAqui(string memory _idVecino) public view returns (bool) {
+        string memory NombrePuertaViveAqui = string(
+            abi.encodePacked(
+                MappingVecinos[_idVecino].nombre,
+                MappingVecinos[_idVecino].puerta
+            )
+        );
+        bytes32 hashNombrePuertaViveAqui = keccak256(
+            abi.encodePacked(NombrePuertaViveAqui)
+        );
+
+        for (uint256 i = 0; i < ArrayHashNombrePuerta.length; i++) {
+            if (ArrayHashNombrePuerta[i] == hashNombrePuertaViveAqui) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
