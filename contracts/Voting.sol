@@ -163,6 +163,7 @@ contract Voting {
     }
 
     bytes32[] ArrayVotantes;
+    string[] ArrayCandidaturas;
 
     function ViveAqui(string memory _idVecino) public view returns (bool) {
         /*
@@ -187,5 +188,47 @@ contract Voting {
         }
 
         return false;
+    }
+
+    //Funcion para presentarse como Presidente.
+    function PresentarseComoPresidente(string memory _idVecino) public {
+        ArrayCandidaturas.push(_idVecino);
+    }
+
+    //Funcion getter para ver quien se ha presentado
+    function GetCandidaturas() public view returns (string[] memory) {
+        return ArrayCandidaturas;
+    }
+
+    string[] VecinosQueHanVotado;
+
+    //Funcion para votar a los que se han presentado. Cada dirección solo podrá votar una vez.
+    function Votar(string memory _idVecino, string memory _idCandidato)
+        public
+        returns (
+            bool,
+            string memory,
+            string memory
+        )
+    {
+        //Añadimos el nombre del votante a un array y antes de votar miramos que no exista en ese array.
+        for (uint256 i = 0; i < VecinosQueHanVotado.length; i++) {
+            //Hash de el elemento i del array de vecinos que ya han ejercido su voto
+            bytes32 hash_VecinosQueHanVotado = keccak256(
+                abi.encodePacked(VecinosQueHanVotado[i])
+            );
+            //Hash del _idVecino que quiere votar
+            bytes32 hash_Votante = keccak256(abi.encodePacked(_idVecino));
+
+            //Si se encuentra una coincidencia, quiere decir que ese vecino ya ha votado. Se sale del bucle for.
+            //Si no se encuentra coincidencia, pasamos al siguiente if.
+            if (hash_VecinosQueHanVotado == hash_Votante) {
+                return (false, "Ya has votado", _idCandidato);
+            }
+        }
+
+        VecinosQueHanVotado.push(_idVecino);
+        return (true, "Se ha contabilizado", _idCandidato);
+        //Comprobamos que el _idCandidato se encuentre dentro del ArrayCandidaturas.
     }
 }
